@@ -63,7 +63,7 @@ ul.nav li {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  border: 0.0625em solid #000000;
+  border: 0.0625em solid darkgrey;
 }
 
 #snakeButtons {
