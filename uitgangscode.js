@@ -92,6 +92,7 @@ function move(direction) {
     }
 	else if (snake.canMove(direction)) {
 		snake.doMove(direction);
+		removeFood();
 		draw();
 	}
 	else {
@@ -152,7 +153,6 @@ function Snake(segments) {
         if (!(nwHead.collidesWithOneOf(foods))) {
             snake.segments.shift();
         }
-        else nwHead.removeFood(foods);
     };
 
     this.canMove = function (direction) {
@@ -224,14 +224,6 @@ function Element(radius, x, y, color) {
                 }
             }
        return collision;
-       };
-       this.removeFood = function(voedsel) {
-            for (i=0; i < voedsel.length; i++) {
-                if (Math.abs(this.x-voedsel[i].x) < 1.5 * R && Math.abs(this.y-voedsel[i].y) < 1.5 * R) {
-                voedsel.splice(i,1);
-                }
-            }
-       //return collision;
        };
 };
 
@@ -321,6 +313,16 @@ function createFoods() {
         if (!food.collidesWithOneOf(snake.segments) && !food.collidesWithOneOf(foods) ) {
             foods.push(food);
             i++
+        }
+    }
+}
+
+function removeFood()  {
+    var headIndexSnake=snake.segments.length-1;
+    var head = snake.segments[headIndexSnake];
+    for (i=0; i < foods.length; i++) {
+        if (Math.abs(head.x-foods[i].x) < 1.5 * R && Math.abs(head.y-foods[i].y) < 1.5 * R) {
+            foods.splice(i,1);
         }
     }
 }
