@@ -24,6 +24,23 @@ var snake = null,
 	xMax = width - R,         // maximale waarde van x = width - R
 	yMax = height - R,        // maximale waarde van y = height - R
 	direction = UP;
+	// bepalen van de variabele direction
+    $(document).keydown(function (e) {
+     switch (e.which) {
+      case 37: // left
+       direction = LEFT;
+       break;
+     case 38: // up
+       direction = UP;
+       break;
+     case 39: // right
+       direction = RIGHT;
+       break;
+     case 40: // down
+       direction = DOWN;
+       break;
+     }
+    });
 	
 $(document).ready(function() {
 	$("#startSnake").click(init);  
@@ -42,23 +59,7 @@ context = canvas.getContext("2d");
 createStartSnake();
 createFoods();
 draw();
-// bepalen van de variabele direction
-$(document).keydown(function (e) {
- switch (e.which) {
-  case 37: // left
-   direction = LEFT;
-   break;
- case 38: // up
-   direction = UP;
-   break;
- case 39: // right
-   direction = RIGHT;
-   break;
- case 40: // down
-   direction = DOWN;
-   break;
- }
-});
+
 // laat de slang bewegen
 snakeTimer = setInterval(function() {
 move(direction);}, SLEEPTIME);
