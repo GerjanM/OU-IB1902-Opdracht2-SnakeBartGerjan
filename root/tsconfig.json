@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "ES2015",
+        "module": "commonjs",
+        "strict": false,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "outDir": "output"
+      },
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Recommended",
+    "files": [
+      "src/environment.ts",
+      "src/model.ts",
+      "src/presenter.ts",
+      "src/view.ts"
+    ],
+    "exclude": ["node_modules"]
+
+}
