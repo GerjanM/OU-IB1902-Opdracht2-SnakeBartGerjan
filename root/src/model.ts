@@ -1,5 +1,5 @@
-import {einde} from './presenter';
-import {setWidth, setHeight, setXMax, setYMax, R, STEP, XMIN, YMIN, DIRECTIONS, width, height, xMax, yMax} from './environment';
+import {einde} from './presenter.js';
+import {setWidth, setHeight, setXMax, setYMax, R, STEP, XMIN, YMIN, DIRECTIONS, width, height, xMax, yMax} from './environment.js';
 /***
 Het model is het domein. Het is de bedoeling dat het domein geheel
 onafhankelijk is. Het model hoeft dus de rest van de applicatie niet te

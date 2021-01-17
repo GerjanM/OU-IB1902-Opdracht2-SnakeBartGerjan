@@ -1,6 +1,6 @@
-import {foods, snake} from "./model";
+import {foods, snake} from "./model.js";
 import {DIRECTIONS, xMax, yMax } from "./environment.js";
-import {init, einde, changeDirection} from "./presenter";
+import {init, einde, changeDirection} from "./presenter.js";
 
 /***
 De view is het zichtbare deel van de applicatie. In het geval van een
@@ -20,6 +20,7 @@ var endtext,
 Generieke eventhandlers
 ***/
 $(document).ready(function() {
+  canvas = $("#mySnakeCanvas");
   $("#startSnake").click(init);
   $("#stopSnake").click(stop);
   jQuery(document).keydown(function(e) {

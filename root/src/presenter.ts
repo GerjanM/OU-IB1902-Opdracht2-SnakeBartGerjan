@@ -1,6 +1,6 @@
-import {createFoods, createStartSnake, move, setFoods, setMovable, setDirection, foods, snake, direction, movable} from "./model";
-import {setWidth, setHeight, setXMax, setYMax, R, STEP, XMIN, YMIN, DIRECTIONS, width, height, xMax, yMax} from "./environment";
-import {draw, canvas, setEndText} from "./view";
+import {createFoods, createStartSnake, move, setFoods, setMovable, setDirection, foods, snake, direction, movable} from "./model.js";
+import {setWidth, setHeight, setXMax, setYMax, R, STEP, XMIN, YMIN, DIRECTIONS, width, height, xMax, yMax} from "./environment.js";
+import {draw, canvas, setEndText} from "./view.js";
 /***
 De presenter zit tussen het domein en de view in. De presenter bekijkt
 de events die het via de view krijgt, en brengt op basis daarvan veran-
