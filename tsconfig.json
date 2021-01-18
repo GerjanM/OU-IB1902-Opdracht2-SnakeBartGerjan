@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es5",                        
+    "module": "es6",                    
+    "outDir": "./output",                      
+    "strict": true,                                      
+    "esModuleInterop": true,                
+    "skipLibCheck": true,                    
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2016", "dom", "es5"]
+  },
+  "files": ["presenter.ts","view.ts","model.ts","environment.ts"]
+}
