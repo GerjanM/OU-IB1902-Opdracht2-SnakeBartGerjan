@@ -1,29 +1,15 @@
-const R        = 10,          // straal van een element
-      STEP     = 2*R,         // stapgrootte
-                              // er moet gelden: WIDTH = HEIGHT
-      LEFT     = "left",      // bewegingsrichtingen 
-      RIGHT    = "right",
-      UP       = "up",
-      DOWN     = "down",
-
-      NUMFOODS = 5,          // aantal voedselelementen
-
-      XMIN     = R,           // minimale x waarde 
-      YMIN     = R,           // minimale y waarde 
-	  
-	  SLEEPTIME = 500,        // aantal milliseconde voor de timer
-
-      SNAKE   = "DarkRed" ,   // kleur van een slangsegment
-      FOOD    = "Olive",      // kleur van voedsel
-	  HEAD    = "DarkOrange"  // kleur van de kop van de slang
+     R        = 10,          // straal van een element
+     STEP     = 2*R;         // stapgrootte
+     NUMFOODS = 5,          // aantal voedselelementen
+     XMIN     = R,           // minimale x waarde
+     YMIN     = R,           // minimale y waarde
+     SNAKE   = "DarkRed" ,   // kleur van een slangsegment
+     FOOD    = "Olive",      // kleur van voedsel
+	 HEAD    = "DarkOrange" // kleur van de kop van de slang
 
 var snake = null,
-    foods = [],               // voedsel voor de slang
-	width = 360,              // breedte van het tekenveld
-    height = 360,             // hoogte van het tekenveld
-	xMax = width - R,         // maximale waarde van x = width - R
-	yMax = height - R,        // maximale waarde van y = height - R
-	direction = UP;
+    foods = []               // voedsel voor de slang
+	direction = "up";
 	// bepalen van de variabele direction
     $(document).keydown(function (e) {
      switch (e.which) {
@@ -41,81 +27,7 @@ var snake = null,
        break;
      }
     });
-	
-$(document).ready(function() {
-	$("#startSnake").click(init);  
-	$("#stopSnake").click(stop);
-});
 
-/**
-  @function init() -> void
-  @desc Haal eventueel bestaand voedsel en een bestaande slang weg, cre\"eer een slang, genereer voedsel, en teken alles
-*/
-function init() {
-snake = null;
-foods = [];
-canvas = document.getElementById("mySnakeCanvas");
-context = canvas.getContext("2d");
-createStartSnake();
-createFoods();
-draw();
-
-// laat de slang bewegen
-snakeTimer = setInterval(function() {
-move(direction);}, SLEEPTIME);
-}
-
-/**
-  @function stop() -> void
-  @desc Haal eventueel bestaand voedsel en een bestaande slang weg, cre\"eer een slang, genereer voedsel, en teken alles
-*/
-function stop() {
-clearInterval(snakeTimer);
-context.clearRect(0, 0, 360, 360);
-snake = null;
-foods = [];
-}
-
-/**
-  @function move(direction) -> void
-  @desc Beweeg slang in aangegeven richting
-        tenzij slang uit canvas zou verdwijnen  
-  @param   {string} direction de richting (een van de constanten UP, DOWN, LEFT of RIGHT)
-*/
-function move(direction) {
-    if (foods.length == 0) {
-    alert("U bent de winnaaaarrrr !");
-    console.log("Winnaar");
-    }
-    else if (snake.snakeRaak()) {
-    alert("Je hebt jezelf opgegeten : je hebt verloren :(");
-    console.log("Verloren");
-    }
-	else if (snake.canMove(direction)) {
-		snake.doMove(direction);
-		removeFood();
-		draw();
-	}
-	else {
-		console.log("snake cannot move " + direction);
-	}
-}
-
-/**
-  @function draw() -> void
-  @desc Teken de slang en het voedsel
-*/
-function draw() {
-    context.clearRect(0, 0, width, height);
-	canvas = document.getElementById("mySnakeCanvas");
-    context = canvas.getContext("2d");
-    for (i = 0; i < snake.segments.length;i++) {
-        drawElement(snake.segments[i], canvas, context);
-    }
-    for (i = 0; i < foods.length; i++) {
-        drawElement(foods[i], canvas, context);
-    }
-}
 /***************************************************************************
  **                 Constructors                                          **
  ***************************************************************************/
@@ -123,8 +35,8 @@ function draw() {
    @constructor Snake
    @desc de slang krijgt ook een paar methoden: of hij mag bewegen, of hij kan bewegen en of hij zichzelf raakt
    @param {[Element] segments een array met aaneengesloten slangsegmenten
-                   Het laatste element van segments wordt de kop van de slang 
-*/ 
+                   Het laatste element van segments wordt de kop van de slang
+*/
 function Snake(segments) {
     this.segments = segments;
     this.oudeHead = this.segments[this.segments.length-1];
@@ -133,19 +45,19 @@ function Snake(segments) {
         oudeHead.color=SNAKE;
         switch (direction) {   //de variabele nwHead bepalen op basis van direction
             case UP: {
-                var nwHead = createSegmentHead(oudeHead.x, oudeHead.y - 2*R);
+                var nwHead = createSegmentHead(oudeHead.x, oudeHead.y - STEP);
                 break;
             }
             case DOWN: {
-                var nwHead = createSegmentHead(oudeHead.x, oudeHead.y + 2*R);
+                var nwHead = createSegmentHead(oudeHead.x, oudeHead.y + STEP);
                 break;
             }
             case LEFT: {
-                var nwHead = createSegmentHead(oudeHead.x - 2 * R, oudeHead.y);
+                var nwHead = createSegmentHead(oudeHead.x - STEP, oudeHead.y);
                 break;
             }
             case RIGHT: {
-                var nwHead = createSegmentHead(oudeHead.x + 2 * R, oudeHead.y);
+                var nwHead = createSegmentHead(oudeHead.x + STEP, oudeHead.y);
                 break;
             }
         }
@@ -211,7 +123,7 @@ function Snake(segments) {
    @param {number} x x-coordinaat middelpunt
    @param {number} y y-coordinaat middelpunt
    @param {string} color kleur van het element
-*/ 
+*/
 function Element(radius, x, y, color) {
        this.radius = radius;
        this.x = x;
@@ -231,10 +143,10 @@ function Element(radius, x, y, color) {
 /***************************************************************************
  **                 Hulpfuncties                                          **
  ***************************************************************************/
- 
+
 /**
   @function createStartSnake() -> Snake
-  @desc Slang creëren, bestaande uit  twee segmenten, 
+  @desc Slang creëren, bestaande uit  twee segmenten,
         in het midden van het veld
   @return: slang volgens specificaties
 */
@@ -278,7 +190,7 @@ function createFood(x, y) {
 
 /**
   @function drawElement(element, canvas) -> void
-  @desc Een element tekenen 
+  @desc Een element tekenen
   @param {Element} element een Element object
   @param  {dom object} canvas het tekenveld
 */
@@ -291,7 +203,7 @@ function drawElement(element, canvas, context) {
 
 /**
   @function getRandomInt(min: number, max: number) -> number
-  @desc Creeren van random geheel getal in het interval [min, max] 
+  @desc Creeren van random geheel getal in het interval [min, max]
   @param {number} min een geheel getal als onderste grenswaarde
   @param {number} max een geheel getal als bovenste grenswaarde (max > min)
   @return {number} een random geheel getal x waarvoor geldt: min <= x <= max
