@@ -1,6 +1,6 @@
 import { foods, snake } from "./model.js";
 import { DIRECTIONS, xMax, yMax } from "./environment.js";
-import { init, changeDirection } from "./presenter.js";
+import { init, finish, changeDirection } from "./presenter.js";
 /***
 De view is het zichtbare deel van de applicatie. In het geval van een
 webapplicatie bestaat de view uit alle code die er voor zorgt dat de
@@ -16,7 +16,7 @@ Generieke eventhandlers
 $(document).ready(function () {
     canvas = $("#mySnakeCanvas");
     $("#startSnake").click(init);
-    $("#stopSnake").click(stop);
+    $("#stopSnake").click(finish);
     jQuery(document).keydown(function (e) {
         switch (e.which) {
             case 37:

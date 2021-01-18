@@ -40,13 +40,13 @@ function einde(winst) {
     else {
         setEndText("Game Over!");
     }
-    stop();
+    finish();
 }
 /**
  * @function stop() -> void
  * @desc stopt het spel
  */
-function stop() {
+function finish() {
     setDirection(DIRECTIONS.UP);
     clearInterval(snakeTimer);
 }
@@ -84,4 +84,4 @@ function changeDirection(new_direction) {
             break;
     }
 }
-export { init, einde, changeDirection };
+export { init, einde, finish, changeDirection };
