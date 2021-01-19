@@ -1,6 +1,6 @@
 import {foods, snake} from "./model.js";
 import {DIRECTIONS, xMax, yMax } from "./environment.js";
-import {init, einde, changeDirection} from "./presenter.js";
+import {init, finish, changeDirection} from "./presenter.js";
 
 /***
 De view is het zichtbare deel van de applicatie. In het geval van een
@@ -12,8 +12,8 @@ van de gebruiker door aan de presenter zonder er zelf iets mee te doen.
 ***/
 
 
-var endtext,
-    canvas;
+var endtext: any,
+    canvas: any;
 
 
 /***
@@ -22,7 +22,7 @@ Generieke eventhandlers
 $(document).ready(function() {
   canvas = $("#mySnakeCanvas");
   $("#startSnake").click(init);
-  $("#stopSnake").click(stop);
+  $("#stopSnake").click(finish);
   jQuery(document).keydown(function(e) {
     switch(e.which) {
       case 37:
@@ -47,7 +47,8 @@ $(document).ready(function() {
 @desc Teken de slang en het voedsel
 */
 function draw() {
-  $("#mySnakeCanvas").clearCanvas();
+  canvas.clearCanvas();
+  
   foods.forEach((item, i) => {
     drawElement(item,canvas);
   });
@@ -70,10 +71,10 @@ function draw() {
 /**
 @function drawElement(element, canvas) -> void
 @desc Een element tekenen
-@param {Element} element een Element object
+@param {SnakeElement} element een Element object
 @param  {dom object} canvas het tekenveld
 */
-function drawElement(element, canvas) {
+function drawElement(element: { color: string; x: number; y: number; radius: number; }, canvas: any) {
   canvas.drawArc({
     draggable : false,
     fillStyle : element.color,
@@ -82,8 +83,12 @@ function drawElement(element, canvas) {
     radius : element.radius
   });
 }
-
-function setEndText(t: string) {
+/**
+ * @function setEndText(t) -> void
+ * @desc Zet de eindtekst van het spel
+ * @param t {string} tekst die gedisplayed moet worden in het canvas
+ */
+function setEndText(t?: string) {
   endtext = t;
 }
 export {draw, setEndText, canvas};

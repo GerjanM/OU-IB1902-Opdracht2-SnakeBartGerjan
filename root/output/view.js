@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.canvas = exports.setEndText = exports.draw = void 0;
-const model_1 = require("./model");
-const environment_js_1 = require("./environment.js");
-const presenter_1 = require("./presenter");
+import { foods, snake } from "./model.js";
+import { DIRECTIONS, xMax, yMax } from "./environment.js";
+import { init, finish, changeDirection } from "./presenter.js";
 /***
 De view is het zichtbare deel van de applicatie. In het geval van een
 webapplicatie bestaat de view uit alle code die er voor zorgt dat de
@@ -13,26 +10,26 @@ te updaten, en krijgt daarvoor de gegevens mee. De view geeft events
 van de gebruiker door aan de presenter zonder er zelf iets mee te doen.
 ***/
 var endtext, canvas;
-exports.canvas = canvas;
 /***
 Generieke eventhandlers
 ***/
 $(document).ready(function () {
-    $("#startSnake").click(presenter_1.init);
-    $("#stopSnake").click(stop);
+    canvas = $("#mySnakeCanvas");
+    $("#startSnake").click(init);
+    $("#stopSnake").click(finish);
     jQuery(document).keydown(function (e) {
         switch (e.which) {
             case 37:
-                presenter_1.changeDirection(environment_js_1.DIRECTIONS.LEFT);
+                changeDirection(DIRECTIONS.LEFT);
                 break;
             case 38:
-                presenter_1.changeDirection(environment_js_1.DIRECTIONS.UP);
+                changeDirection(DIRECTIONS.UP);
                 break;
             case 39:
-                presenter_1.changeDirection(environment_js_1.DIRECTIONS.RIGHT);
+                changeDirection(DIRECTIONS.RIGHT);
                 break;
             case 40:
-                presenter_1.changeDirection(environment_js_1.DIRECTIONS.DOWN);
+                changeDirection(DIRECTIONS.DOWN);
                 break;
         }
         e.preventDefault();
@@ -43,11 +40,11 @@ $(document).ready(function () {
 @desc Teken de slang en het voedsel
 */
 function draw() {
-    $("#mySnakeCanvas").clearCanvas();
-    model_1.foods.forEach((item, i) => {
+    canvas.clearCanvas();
+    foods.forEach((item, i) => {
         drawElement(item, canvas);
     });
-    model_1.snake.segments.forEach((item, i) => {
+    snake.segments.forEach((item, i) => {
         drawElement(item, canvas);
     });
     if (endtext) {
@@ -55,18 +52,17 @@ function draw() {
             fillStyle: "#9cf",
             strokeStyle: "#25a",
             strokeWidth: 2,
-            x: environment_js_1.xMax / 2, y: environment_js_1.yMax / 2,
+            x: xMax / 2, y: yMax / 2,
             fontSize: 48,
             fontFamily: "Verdana, sans-serif",
             text: endtext
         });
     }
 }
-exports.draw = draw;
 /**
 @function drawElement(element, canvas) -> void
 @desc Een element tekenen
-@param {Element} element een Element object
+@param {SnakeElement} element een Element object
 @param  {dom object} canvas het tekenveld
 */
 function drawElement(element, canvas) {
@@ -78,7 +74,12 @@ function drawElement(element, canvas) {
         radius: element.radius
     });
 }
+/**
+ * @function setEndText(t) -> void
+ * @desc Zet de eindtekst van het spel
+ * @param t {string} tekst die gedisplayed moet worden in het canvas
+ */
 function setEndText(t) {
     endtext = t;
 }
-exports.setEndText = setEndText;
+export { draw, setEndText, canvas };

@@ -16,17 +16,18 @@ HEAD    = "DarkOrange",   // kleur van de kop van de slang
 NUMFOODS = 5;       // aantal voedselelementen
 
 
-var snake,
-foods = [],                                // voedsel voor de slang
-movable,                  // hulp-boolean die ervoor zorgt dat je maar \'e\'en
+var snake: Snake,
+foods: SnakeElement[],                                // voedsel voor de slang
+movable: boolean,                  // hulp-boolean die ervoor zorgt dat je maar \'e\'en
                           // keer een directie kunt opgeven in een interval.
 direction = DIRECTIONS.UP;
 /***************************************************************************
 **                 Constructors                                          **
 ***************************************************************************/
-/**
-@constructor Snake
-@param {[Element] segments een array met aaneengesloten slangsegmenten
+class Snake {
+  /**
+  @constructor Snake -> Snake
+  @param {[SnakeElement] segments een array met aaneengesloten slangsegmenten
   Het laatste element van segments wordt de kop van de slang
   @param {boolean} lives: geeft aan of de slang nog leeft
   @param {function}isAlive(): geeft de boolean lives terug
@@ -35,21 +36,28 @@ direction = DIRECTIONS.UP;
   @param {function} doMove(): laat de slang in de beweging van direction happen
   eet voedsel op en kan zichzelf doodmaken door zichzelf op te eten
   */
-  function Snake(segments) {
-    this.segments = segments;
-    this.lives = true;
-    this.isAlive = function() {
+    segments: SnakeElement[];
+    lives: boolean;
+
+
+    constructor(segments: SnakeElement[]) {
+      this.segments = segments;
+      this.lives = true;
+      //zet de kop van de slang op de juiste kleur
+      this.segments[segments.length-1].color=HEAD;
+    }
+
+    isAlive = () => {
       return this.lives;
     }
-    //zet de kop van de slang op de juiste kleur
-    this.segments[segments.length-1].color=HEAD;
+    
 
-    this.canMove = function(direction) {
+    canMove = (direction: string) => {
       var canMove = false;
       if (direction){
         //De beweging kan als het laatste segment (kop van slang) + step
         //binnen het canvas blijft
-        var _head = segments[segments.length-1]
+        var _head = this.segments[this.segments.length-1]
         switch(direction) {
           case DIRECTIONS.UP:
           canMove = _head.y - STEP >= 0;
@@ -70,11 +78,11 @@ direction = DIRECTIONS.UP;
 
     //verplaats de slang naar de nieuwe locatie, maak hem langer in het geval
     //van eten, of laat hem sterven in het geval van het happen van de staart
-    this.doMove = function (direction) {
+    doMove =  (direction: string) => {
       if (direction){
         //pass by reference
-        var _head = segments[segments.length-1];
-        var _new_head;
+        var _head = this.segments[this.segments.length-1];
+        var _new_head: any;
         switch(direction) {
           case DIRECTIONS.UP:
           _new_head = createSegment(_head.x, (_head.y - STEP));
@@ -92,7 +100,9 @@ direction = DIRECTIONS.UP;
         //_head is nu body, zet hem op de juiste kleur
         _head.color = SNAKE;
         //geef _new_head de juiste kleur en voeg toe aan de slang
-        _new_head.color = HEAD;
+        if (typeof(_new_head) != undefined) {
+          _new_head.color = HEAD;
+        }
         //controleer of we niet in onze staart bijten
         this.segments.forEach((item, i) => {
           if(detectCollision(item, _new_head)){
@@ -119,7 +129,14 @@ direction = DIRECTIONS.UP;
         }
       }
     }
-  }
+}
+
+class SnakeElement{
+  radius: number;
+  x: number;
+  y: number;
+  color: string;
+  
   /**
   @constructor SnakeElement
   @param radius straal
@@ -129,57 +146,58 @@ direction = DIRECTIONS.UP;
   @param {function} prototype.collidesWithOneOf(arguments) bepaalt of iets uit
           de lijst gelijke waarde en type heeft voor de x en y co\"ordinaten
   */
-  function SnakeElement(radius, x, y, color) {
+  constructor(radius: number, x: number, y: number, color: string) {
     this.radius = radius;
     this.x = x;
     this.y = y;
     this.color = color;
   }
   // verplaatst naar prototype, omdat het een gedeelde functie is
-  SnakeElement.prototype.collidesWithOneOf = function(parameters: any[]) {
+  collidesWithOneOf = (parameters: SnakeElement[]) => {
     var numEquals = 0;
     if (parameters) {
       parameters.forEach((item, i) => {
         //controleer niet op co\"ordinaat inclusief de radius
-        if (detectCollision(item, this)) {
-          numEquals++
-        }
-      });
+      if (detectCollision(item, this)) {
+        numEquals++
+      }
+    });
     }
     return numEquals > 0;
   }
+}
 /***************************************************************************
 **                 HulpFuncties                                          **
 ***************************************************************************/
 /**
-@function createSegment(x,y) -> Element
+@function createSegment(x,y) -> SnakeElement
 @desc Slangsegment creeren op een bepaalde plaats
 @param {number} x x-coordinaat middelpunt
 @param {number} y y-coordinaart middelpunt
-@return: {Element} met straal R en color SNAKE
+@return: {SnakeElement} met straal R en color SNAKE
 */
-function createSegment(x, y) {
+function createSegment(x: number, y: number) {
   return new SnakeElement(R, x, y, SNAKE);
 }
 /**
-@function createFood(x,y) -> Element
+@function createFood(x,y) -> SnakeElement
 @desc Voedselelement creeren op een bepaalde plaats
 @param {number} x x-coordinaat middelpunt
 @param {number} y y-coordinaart middelpunt
-@return: {Element} met straal R en color FOOD
+@return: {SnakeElement} met straal R en color FOOD
 */
-function createFood(x, y) {
+function createFood(x: number, y: number) {
   return new SnakeElement(R, x, y, FOOD);
 }
 
 /**
-@function detectCollision(a,b)
+@function detectCollision(a,b) -> boolean
 @desc controleert of twee elementen overlappende x en y co\"ordinaten hebben
-@param {Element} a eerste element voor de vergelijking
-@param {Element} b tweede element voor de vergelijking
+@param {SnakeElement} a eerste element voor de vergelijking
+@param {SnakeElement} b tweede element voor de vergelijking
 @return: true als hun co\"ordinaten overlappen, false wanneer dat niet zo is.
 */
-function detectCollision(a, b) {
+function detectCollision(a: SnakeElement, b: SnakeElement) {
   return a.x >= b.x-R && a.x <= b.x+R && a.y >= b.y -R && a.y <= b.y + R
 }
 
@@ -190,18 +208,18 @@ function detectCollision(a, b) {
 @param {number} max een geheel getal als bovenste grenswaarde (max > min)
 @return {number} een random geheel getal x waarvoor geldt: min <= x <= max
 */
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number) {
   return Math.floor((Math.random() * (max - min + 1) + min)/STEP)*STEP;
 }
 
 /**
 @function createFoods() -> array met food
-@desc [Element] array van random verdeelde voedselpartikelen
-@return [Element] array met food
+@desc [SnakeElement] array van random verdeelde voedselpartikelen
+@return [SnakeElement] array met food
 */
 function createFoods() {
   var  i = 0,
-  food;
+  food: SnakeElement;
   //we gebruiken een while omdat we, om een arraymethode te gebruiken,
   //eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
   while (i < NUMFOODS ) {
@@ -229,7 +247,7 @@ function createFoods() {
 tenzij slang uit canvas zou verdwijnen
 @param   {string} direction de richting (UP, DOWN, LEFT of RIGHT)
 */
-function move(direction) {
+function move(direction: string) {
   //als het eten op is, hebben we gewonnen
   if(foods.length === 0) {
     einde(true);
@@ -254,16 +272,28 @@ function createStartSnake() {
                     createSegment(R + width/2, height/2 - R)];
   snake = new Snake(segments);
 }
-
-function setFoods(f) {
+/**
+ * @function setFoods(f) -> void
+ * @desc setter for foods
+ * @param f {array} sets foods to f
+ */
+function setFoods(f: SnakeElement[]) {
   foods = f;
 }
-
-function setDirection(d) {
+/**
+ * @function setDirection(d) -> void
+ * @desc setter for direction
+ * @param d {string} sets direction to d
+ */
+function setDirection(d: string) {
   direction =d;
 }
-
-function setMovable(m) {
+/**
+ * @function setMovable(m) -> void
+ * @desc setter for movable
+ * @param m {boolean} sets movable to m
+ */
+function setMovable(m: boolean) {
   movable = m;
 }
 export {createFoods, createStartSnake, move, setFoods,  setDirection, setMovable, snake, foods, direction, movable}

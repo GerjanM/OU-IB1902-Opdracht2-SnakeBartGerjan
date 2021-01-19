@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.movable = exports.direction = exports.foods = exports.snake = exports.setMovable = exports.setDirection = exports.setFoods = exports.move = exports.createStartSnake = exports.createFoods = void 0;
-const presenter_1 = require("./presenter");
-const environment_1 = require("./environment");
+import { einde } from './presenter.js';
+import { R, STEP, XMIN, YMIN, DIRECTIONS, width, height, xMax, yMax } from './environment.js';
 /***
 Het model is het domein. Het is de bedoeling dat het domein geheel
 onafhankelijk is. Het model hoeft dus de rest van de applicatie niet te
@@ -15,171 +12,162 @@ FOOD = "Olive", // kleur van voedsel
 HEAD = "DarkOrange", // kleur van de kop van de slang
 // er moet gelden: WIDTH = HEIGHT
 NUMFOODS = 5; // aantal voedselelementen
-var snake, foods = [], // voedsel voor de slang
+var snake, foods, // voedsel voor de slang
 movable, // hulp-boolean die ervoor zorgt dat je maar \'e\'en
 // keer een directie kunt opgeven in een interval.
-direction = environment_1.DIRECTIONS.UP;
-exports.snake = snake;
-exports.foods = foods;
-exports.movable = movable;
-exports.direction = direction;
+direction = DIRECTIONS.UP;
 /***************************************************************************
 **                 Constructors                                          **
 ***************************************************************************/
-/**
-@constructor Snake
-@param {[Element] segments een array met aaneengesloten slangsegmenten
-  Het laatste element van segments wordt de kop van de slang
-  @param {boolean} lives: geeft aan of de slang nog leeft
-  @param {function}isAlive(): geeft de boolean lives terug
-  @param {function} canMove(): geeft aan of de volgende zet cf direction de
-  slang niet van het canvas doet bewegen
-  @param {function} doMove(): laat de slang in de beweging van direction happen
-  eet voedsel op en kan zichzelf doodmaken door zichzelf op te eten
-  */
-function Snake(segments) {
-    this.segments = segments;
-    this.lives = true;
-    this.isAlive = function () {
-        return this.lives;
-    };
-    //zet de kop van de slang op de juiste kleur
-    this.segments[segments.length - 1].color = HEAD;
-    this.canMove = function (direction) {
-        var canMove = false;
-        if (direction) {
-            //De beweging kan als het laatste segment (kop van slang) + step
-            //binnen het canvas blijft
-            var _head = segments[segments.length - 1];
-            switch (direction) {
-                case environment_1.DIRECTIONS.UP:
-                    canMove = _head.y - environment_1.STEP >= 0;
-                    break;
-                case environment_1.DIRECTIONS.RIGHT:
-                    canMove = _head.x + environment_1.STEP <= environment_1.xMax;
-                    break;
-                case environment_1.DIRECTIONS.DOWN:
-                    canMove = _head.y + environment_1.STEP <= environment_1.yMax;
-                    break;
-                case environment_1.DIRECTIONS.LEFT:
-                    canMove = _head.x - environment_1.STEP >= 0;
-                    break;
-            }
-        }
-        return canMove;
-    };
-    //verplaats de slang naar de nieuwe locatie, maak hem langer in het geval
-    //van eten, of laat hem sterven in het geval van het happen van de staart
-    this.doMove = function (direction) {
-        if (direction) {
-            //pass by reference
-            var _head = segments[segments.length - 1];
-            var _new_head;
-            switch (direction) {
-                case environment_1.DIRECTIONS.UP:
-                    _new_head = createSegment(_head.x, (_head.y - environment_1.STEP));
-                    break;
-                case environment_1.DIRECTIONS.RIGHT:
-                    _new_head = createSegment((_head.x + environment_1.STEP), _head.y);
-                    break;
-                case environment_1.DIRECTIONS.DOWN:
-                    _new_head = createSegment(_head.x, (_head.y + environment_1.STEP));
-                    break;
-                case environment_1.DIRECTIONS.LEFT:
-                    _new_head = createSegment((_head.x - environment_1.STEP), _head.y);
-                    break;
-            }
-            //_head is nu body, zet hem op de juiste kleur
-            _head.color = SNAKE;
-            //geef _new_head de juiste kleur en voeg toe aan de slang
-            _new_head.color = HEAD;
-            //controleer of we niet in onze staart bijten
-            this.segments.forEach((item, i) => {
-                if (detectCollision(item, _new_head)) {
-                    this.lives = false;
-                    //bijt de rest van de staart eraf
-                    this.segments.splice(0, i);
+class Snake {
+    constructor(segments) {
+        this.isAlive = () => {
+            return this.lives;
+        };
+        this.canMove = (direction) => {
+            var canMove = false;
+            if (direction) {
+                //De beweging kan als het laatste segment (kop van slang) + step
+                //binnen het canvas blijft
+                var _head = this.segments[this.segments.length - 1];
+                switch (direction) {
+                    case DIRECTIONS.UP:
+                        canMove = _head.y - STEP >= 0;
+                        break;
+                    case DIRECTIONS.RIGHT:
+                        canMove = _head.x + STEP <= xMax;
+                        break;
+                    case DIRECTIONS.DOWN:
+                        canMove = _head.y + STEP <= yMax;
+                        break;
+                    case DIRECTIONS.LEFT:
+                        canMove = _head.x - STEP >= 0;
+                        break;
                 }
-            });
-            //voeg de kop toe.
-            this.segments.push(_new_head);
-            //zet een tijdelijke variabele, zodat we niet los op collisions
-            //hoeven te zoeken
-            var _remove_tail = true;
-            foods.forEach((item, i) => {
-                if (detectCollision(item, _new_head)) {
-                    foods.splice(i, 1);
-                    //staart niet verwijderen, want we zijn gegroeid door te eten.
-                    _remove_tail = false;
+            }
+            return canMove;
+        };
+        //verplaats de slang naar de nieuwe locatie, maak hem langer in het geval
+        //van eten, of laat hem sterven in het geval van het happen van de staart
+        this.doMove = (direction) => {
+            if (direction) {
+                //pass by reference
+                var _head = this.segments[this.segments.length - 1];
+                var _new_head;
+                switch (direction) {
+                    case DIRECTIONS.UP:
+                        _new_head = createSegment(_head.x, (_head.y - STEP));
+                        break;
+                    case DIRECTIONS.RIGHT:
+                        _new_head = createSegment((_head.x + STEP), _head.y);
+                        break;
+                    case DIRECTIONS.DOWN:
+                        _new_head = createSegment(_head.x, (_head.y + STEP));
+                        break;
+                    case DIRECTIONS.LEFT:
+                        _new_head = createSegment((_head.x - STEP), _head.y);
+                        break;
                 }
-            });
-            if (_remove_tail) {
-                //verwijder het laatste element van de staart, want we zijn verplaatst
-                this.segments.splice(0, 1);
+                //_head is nu body, zet hem op de juiste kleur
+                _head.color = SNAKE;
+                //geef _new_head de juiste kleur en voeg toe aan de slang
+                if (typeof (_new_head) != undefined) {
+                    _new_head.color = HEAD;
+                }
+                //controleer of we niet in onze staart bijten
+                this.segments.forEach((item, i) => {
+                    if (detectCollision(item, _new_head)) {
+                        this.lives = false;
+                        //bijt de rest van de staart eraf
+                        this.segments.splice(0, i);
+                    }
+                });
+                //voeg de kop toe.
+                this.segments.push(_new_head);
+                //zet een tijdelijke variabele, zodat we niet los op collisions
+                //hoeven te zoeken
+                var _remove_tail = true;
+                foods.forEach((item, i) => {
+                    if (detectCollision(item, _new_head)) {
+                        foods.splice(i, 1);
+                        //staart niet verwijderen, want we zijn gegroeid door te eten.
+                        _remove_tail = false;
+                    }
+                });
+                if (_remove_tail) {
+                    //verwijder het laatste element van de staart, want we zijn verplaatst
+                    this.segments.splice(0, 1);
+                }
             }
-        }
-    };
-}
-/**
-@constructor SnakeElement
-@param radius straal
-@param {number} x x-coordinaat middelpunt
-@param {number} y y-coordinaat middelpunt
-@param {string} color kleur van het element
-@param {function} prototype.collidesWithOneOf(arguments) bepaalt of iets uit
-        de lijst gelijke waarde en type heeft voor de x en y co\"ordinaten
-*/
-function SnakeElement(radius, x, y, color) {
-    this.radius = radius;
-    this.x = x;
-    this.y = y;
-    this.color = color;
-}
-// verplaatst naar prototype, omdat het een gedeelde functie is
-SnakeElement.prototype.collidesWithOneOf = function (parameters) {
-    var numEquals = 0;
-    if (parameters) {
-        parameters.forEach((item, i) => {
-            //controleer niet op co\"ordinaat inclusief de radius
-            if (detectCollision(item, this)) {
-                numEquals++;
-            }
-        });
+        };
+        this.segments = segments;
+        this.lives = true;
+        //zet de kop van de slang op de juiste kleur
+        this.segments[segments.length - 1].color = HEAD;
     }
-    return numEquals > 0;
-};
+}
+class SnakeElement {
+    /**
+    @constructor SnakeElement
+    @param radius straal
+    @param {number} x x-coordinaat middelpunt
+    @param {number} y y-coordinaat middelpunt
+    @param {string} color kleur van het element
+    @param {function} prototype.collidesWithOneOf(arguments) bepaalt of iets uit
+            de lijst gelijke waarde en type heeft voor de x en y co\"ordinaten
+    */
+    constructor(radius, x, y, color) {
+        // verplaatst naar prototype, omdat het een gedeelde functie is
+        this.collidesWithOneOf = (parameters) => {
+            var numEquals = 0;
+            if (parameters) {
+                parameters.forEach((item, i) => {
+                    //controleer niet op co\"ordinaat inclusief de radius
+                    if (detectCollision(item, this)) {
+                        numEquals++;
+                    }
+                });
+            }
+            return numEquals > 0;
+        };
+        this.radius = radius;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+    }
+}
 /***************************************************************************
 **                 HulpFuncties                                          **
 ***************************************************************************/
 /**
-@function createSegment(x,y) -> Element
+@function createSegment(x,y) -> SnakeElement
 @desc Slangsegment creeren op een bepaalde plaats
 @param {number} x x-coordinaat middelpunt
 @param {number} y y-coordinaart middelpunt
-@return: {Element} met straal R en color SNAKE
+@return: {SnakeElement} met straal R en color SNAKE
 */
 function createSegment(x, y) {
-    return new SnakeElement(environment_1.R, x, y, SNAKE);
+    return new SnakeElement(R, x, y, SNAKE);
 }
 /**
-@function createFood(x,y) -> Element
+@function createFood(x,y) -> SnakeElement
 @desc Voedselelement creeren op een bepaalde plaats
 @param {number} x x-coordinaat middelpunt
 @param {number} y y-coordinaart middelpunt
-@return: {Element} met straal R en color FOOD
+@return: {SnakeElement} met straal R en color FOOD
 */
 function createFood(x, y) {
-    return new SnakeElement(environment_1.R, x, y, FOOD);
+    return new SnakeElement(R, x, y, FOOD);
 }
 /**
-@function detectCollision(a,b)
+@function detectCollision(a,b) -> boolean
 @desc controleert of twee elementen overlappende x en y co\"ordinaten hebben
-@param {Element} a eerste element voor de vergelijking
-@param {Element} b tweede element voor de vergelijking
+@param {SnakeElement} a eerste element voor de vergelijking
+@param {SnakeElement} b tweede element voor de vergelijking
 @return: true als hun co\"ordinaten overlappen, false wanneer dat niet zo is.
 */
 function detectCollision(a, b) {
-    return a.x >= b.x - environment_1.R && a.x <= b.x + environment_1.R && a.y >= b.y - environment_1.R && a.y <= b.y + environment_1.R;
+    return a.x >= b.x - R && a.x <= b.x + R && a.y >= b.y - R && a.y <= b.y + R;
 }
 /**
 @function getRandomInt(min: number, max: number) -> number
@@ -189,19 +177,19 @@ function detectCollision(a, b) {
 @return {number} een random geheel getal x waarvoor geldt: min <= x <= max
 */
 function getRandomInt(min, max) {
-    return Math.floor((Math.random() * (max - min + 1) + min) / environment_1.STEP) * environment_1.STEP;
+    return Math.floor((Math.random() * (max - min + 1) + min) / STEP) * STEP;
 }
 /**
 @function createFoods() -> array met food
-@desc [Element] array van random verdeelde voedselpartikelen
-@return [Element] array met food
+@desc [SnakeElement] array van random verdeelde voedselpartikelen
+@return [SnakeElement] array met food
 */
 function createFoods() {
     var i = 0, food;
     //we gebruiken een while omdat we, om een arraymethode te gebruiken,
     //eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
     while (i < NUMFOODS) {
-        food = createFood(environment_1.XMIN + getRandomInt(0, environment_1.xMax), environment_1.YMIN + getRandomInt(0, environment_1.yMax));
+        food = createFood(XMIN + getRandomInt(0, xMax), YMIN + getRandomInt(0, yMax));
         if (!food.collidesWithOneOf(snake.segments)
             &&
                 !food.collidesWithOneOf(foods)) {
@@ -210,7 +198,6 @@ function createFoods() {
         }
     }
 }
-exports.createFoods = createFoods;
 /***************************************************************************
 **                 Gamelogic                                              **
 ***************************************************************************/
@@ -223,18 +210,17 @@ tenzij slang uit canvas zou verdwijnen
 function move(direction) {
     //als het eten op is, hebben we gewonnen
     if (foods.length === 0) {
-        presenter_1.einde(true);
+        einde(true);
     }
     else if (snake.canMove(direction) && snake.isAlive()) {
         snake.doMove(direction);
     }
     else {
-        presenter_1.einde(false);
+        einde(false);
     }
     //nu de move klaar is accepteren we weer nieuwe inputs van de gebruiker
-    exports.movable = movable = true;
+    movable = true;
 }
-exports.move = move;
 /**
 @function createStartSnake() -> Snake
 @desc Slang creëren, bestaande uit  twee segmenten,
@@ -242,20 +228,32 @@ in het midden van het veld
 @return: slang volgens specificaties
 */
 function createStartSnake() {
-    var segments = [createSegment(environment_1.R + environment_1.width / 2, environment_1.R + environment_1.height / 2),
-        createSegment(environment_1.R + environment_1.width / 2, environment_1.height / 2 - environment_1.R)];
-    exports.snake = snake = new Snake(segments);
+    var segments = [createSegment(R + width / 2, R + height / 2),
+        createSegment(R + width / 2, height / 2 - R)];
+    snake = new Snake(segments);
 }
-exports.createStartSnake = createStartSnake;
+/**
+ * @function setFoods(f) -> void
+ * @desc setter for foods
+ * @param f {array} sets foods to f
+ */
 function setFoods(f) {
-    exports.foods = foods = f;
+    foods = f;
 }
-exports.setFoods = setFoods;
+/**
+ * @function setDirection(d) -> void
+ * @desc setter for direction
+ * @param d {string} sets direction to d
+ */
 function setDirection(d) {
-    exports.direction = direction = d;
+    direction = d;
 }
-exports.setDirection = setDirection;
+/**
+ * @function setMovable(m) -> void
+ * @desc setter for movable
+ * @param m {boolean} sets movable to m
+ */
 function setMovable(m) {
-    exports.movable = movable = m;
+    movable = m;
 }
-exports.setMovable = setMovable;
+export { createFoods, createStartSnake, move, setFoods, setDirection, setMovable, snake, foods, direction, movable };

@@ -10,7 +10,7 @@ met behulp van events die het model afvuurt, besluit de presenter hoe
 de view moet worden ge-update.
 ***/
 const SLEEPTIME = 500;        // aantal milliseconde voor de timer
-var snakeTimer;
+var snakeTimer: any;
 
 /**
 @function init() -> void
@@ -19,6 +19,7 @@ var snakeTimer;
 */
 function init() {
   setFoods([]);
+  setEndText();
   setWidth(canvas.width());
   setHeight(canvas.height());
   setXMax(width - 2*R);
@@ -33,17 +34,30 @@ function init() {
 @desc stopt het spel een zet de eindtekst op winst of verlies
 @param {boolean} winst: bepaalt de eindtekst: true is winst, false is verlies
 */
-function einde(winst) {
-  setDirection(DIRECTIONS.UP);
-  clearInterval(snakeTimer);
+function einde(winst: boolean) {
   if(winst) {
     setEndText("Victory!");
   } else {
     setEndText("Game Over!");
   }
+  finish();
+}
+/**
+ * @function stop() -> void
+ * @desc stopt het spel
+ */
+function finish() {
+  setDirection(DIRECTIONS.UP);
+  clearInterval(snakeTimer);
 }
 
-function changeDirection(new_direction) {
+/**
+ * @function changeDirection(new_direction) -> void
+ * @desc sets the snake direction to new direction, and disallows setting it until the 
+ *      snake moved. Allowes new_directions for any direction but the opposite
+ * @param new_direction {string} set direction to new_direction
+ */
+function changeDirection(new_direction: string) {
   switch(new_direction) {
     case DIRECTIONS.LEFT:
       if (direction != DIRECTIONS.RIGHT && movable){
@@ -73,4 +87,4 @@ function changeDirection(new_direction) {
 
 }
 
-export { init, einde, changeDirection};
+export { init, einde, finish, changeDirection};
