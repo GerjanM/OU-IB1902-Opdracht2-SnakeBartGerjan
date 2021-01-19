@@ -22,8 +22,8 @@ function init() {
   setEndText();
   setWidth(canvas.width());
   setHeight(canvas.height());
-  setXMax(width - 2*R);
-  setYMax(height - 2*R);
+  setXMax(width);
+  setYMax(height);
   createStartSnake();
   createFoods();
   draw();

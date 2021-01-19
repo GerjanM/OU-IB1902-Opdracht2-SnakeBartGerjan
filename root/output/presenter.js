@@ -1,5 +1,5 @@
 import { createFoods, createStartSnake, move, setFoods, setMovable, setDirection, direction, movable } from "./model.js";
-import { setWidth, setHeight, setXMax, setYMax, R, DIRECTIONS, width, height } from "./environment.js";
+import { setWidth, setHeight, setXMax, setYMax, DIRECTIONS, width, height } from "./environment.js";
 import { draw, canvas, setEndText } from "./view.js";
 /***
 De presenter zit tussen het domein en de view in. De presenter bekijkt
@@ -21,8 +21,8 @@ function init() {
     setEndText();
     setWidth(canvas.width());
     setHeight(canvas.height());
-    setXMax(width - 2 * R);
-    setYMax(height - 2 * R);
+    setXMax(width);
+    setYMax(height);
     createStartSnake();
     createFoods();
     draw();
