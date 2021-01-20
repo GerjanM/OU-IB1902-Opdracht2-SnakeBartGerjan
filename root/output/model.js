@@ -179,6 +179,12 @@ function detectCollision(a, b) {
 function getRandomInt(min, max) {
     return Math.floor((Math.random() * (max - min + 1) + min) / STEP) * STEP;
 }
+
+/* voor test QUnit*/
+function setInt(getal) {
+    return getal;
+}
+
 /**
 @function createFoods() -> array met food
 @desc [SnakeElement] array van random verdeelde voedselpartikelen
@@ -197,6 +203,7 @@ function createFoods() {
             i++;
         }
     }
+
 }
 /***************************************************************************
 **                 Gamelogic                                              **
@@ -214,6 +221,7 @@ function move(direction) {
     }
     else if (snake.canMove(direction) && snake.isAlive()) {
         snake.doMove(direction);
+        return
     }
     else {
         einde(false);
@@ -247,6 +255,7 @@ function setFoods(f) {
  */
 function setDirection(d) {
     direction = d;
+    return direction;
 }
 /**
  * @function setMovable(m) -> void
@@ -255,5 +264,6 @@ function setDirection(d) {
  */
 function setMovable(m) {
     movable = m;
+    return movable;
 }
-export { createFoods, createStartSnake, move, setFoods, setDirection, setMovable, snake, foods, direction, movable };
+export { createFoods, createStartSnake, move, setFoods, setDirection, setMovable, snake, foods, direction, movable, setInt };
