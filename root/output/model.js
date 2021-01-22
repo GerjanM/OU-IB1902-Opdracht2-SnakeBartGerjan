@@ -206,20 +206,26 @@ function createFoods() {
 @desc Beweeg slang in aangegeven richting
 tenzij slang uit canvas zou verdwijnen
 @param   {string} direction de richting (UP, DOWN, LEFT of RIGHT)
+@return: de te nemen actie
 */
 function move(direction) {
     //als het eten op is, hebben we gewonnen
+    var actie;
     if (foods.length === 0) {
         einde(true);
+        actie = "toon winnaarsscherm";
     }
     else if (snake.canMove(direction) && snake.isAlive()) {
         snake.doMove(direction);
+        actie = "bewegen";
     }
     else {
         einde(false);
+        actie = "toon verliezersscherm";
     }
     //nu de move klaar is accepteren we weer nieuwe inputs van de gebruiker
     movable = true;
+    return actie;
 }
 /**
 @function createStartSnake() -> Snake
@@ -256,4 +262,4 @@ function setDirection(d) {
 function setMovable(m) {
     movable = m;
 }
-export { createFoods, createStartSnake, move, setFoods, setDirection, setMovable, snake, foods, direction, movable };
+export { createFoods, createStartSnake, createSegment, move, setFoods, setDirection, setMovable, snake, foods, direction, movable };
