@@ -179,12 +179,6 @@ function detectCollision(a, b) {
 function getRandomInt(min, max) {
     return Math.floor((Math.random() * (max - min + 1) + min) / STEP) * STEP;
 }
-
-/* voor test QUnit*/
-function setInt(getal) {
-    return getal;
-}
-
 /**
 @function createFoods() -> array met food
 @desc [SnakeElement] array van random verdeelde voedselpartikelen
@@ -203,7 +197,6 @@ function createFoods() {
             i++;
         }
     }
-
 }
 /***************************************************************************
 **                 Gamelogic                                              **
@@ -213,21 +206,26 @@ function createFoods() {
 @desc Beweeg slang in aangegeven richting
 tenzij slang uit canvas zou verdwijnen
 @param   {string} direction de richting (UP, DOWN, LEFT of RIGHT)
+@return: de te nemen actie
 */
 function move(direction) {
     //als het eten op is, hebben we gewonnen
+    var actie;
     if (foods.length === 0) {
         einde(true);
+        actie = "toon winnaarsscherm";
     }
     else if (snake.canMove(direction) && snake.isAlive()) {
         snake.doMove(direction);
-        return
+        actie = "bewegen";
     }
     else {
         einde(false);
+        actie = "toon verliezersscherm";
     }
     //nu de move klaar is accepteren we weer nieuwe inputs van de gebruiker
     movable = true;
+    return actie;
 }
 /**
 @function createStartSnake() -> Snake
@@ -255,7 +253,6 @@ function setFoods(f) {
  */
 function setDirection(d) {
     direction = d;
-    return direction;
 }
 /**
  * @function setMovable(m) -> void
@@ -264,6 +261,5 @@ function setDirection(d) {
  */
 function setMovable(m) {
     movable = m;
-    return movable;
 }
-export { createFoods, createStartSnake, move, setFoods, setDirection, setMovable, snake, foods, direction, movable, setInt };
+export { createFoods, createStartSnake, createSegment, move, setFoods, setDirection, setMovable, snake, foods, direction, movable };

@@ -81,6 +81,5 @@ function drawElement(element, canvas) {
  */
 function setEndText(t) {
     endtext = t;
-    return endtext;
 }
 export { draw, setEndText, canvas };
