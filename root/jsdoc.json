@@ -1,0 +1,10 @@
+{
+    "source": {
+        "includePattern": ".+\\.js$",   
+        "include": ["output", "output/test"]
+    },
+    "recurseDepth": 1,
+    "opts": {
+        "destination": "output/out/"
+    }
+}
