@@ -1,5 +1,5 @@
-import {createFoods, createStartSnake, move, setFoods, setMovable, setDirection, foods, snake, direction, movable} from "./model.js";
-import {setWidth, setHeight, setXMax, setYMax, R, STEP, XMIN, YMIN, DIRECTIONS, width, height, xMax, yMax} from "./environment.js";
+import {setStartPositions, move, getMovable, setMovable, getGameOver, getElementsForDrawing} from "./model.js";
+import {setWidth, setHeight, setXMax, setYMax, ENV_CONSTANTS} from "./environment.js";
 import {draw, canvas, setEndText} from "./view.js";
 /***
 De presenter zit tussen het domein en de view in. De presenter bekijkt
@@ -9,8 +9,14 @@ Met behulp van de terugkeerwaarden van die methoden en (eventueel)
 met behulp van events die het model afvuurt, besluit de presenter hoe
 de view moet worden ge-update.
 ***/
-const SLEEPTIME = 500;        // aantal milliseconde voor de timer
-var snakeTimer: any;
+
+/**
+* @module presenter
+* @desc Handelt events van de view af, geeft model de opdracht het spel te starten, en view de opdracht een nieuw scherm te tekenen
+*/
+
+var snakeTimer: any,
+    direction: string =  ENV_CONSTANTS.DIRECTIONS.UP; //hulpwaarde om de geldigheid van de move te valideren
 
 /**
 @function init() -> void
@@ -18,36 +24,45 @@ var snakeTimer: any;
       een slang, genereer voedsel, en teken alles
 */
 function init() {
-  setFoods([]);
+  //schoon mogelijke vervuiling door een eerdere start op
+  if (snakeTimer !== undefined) {
+    clearInterval(snakeTimer);
+  }
   setEndText();
+  //initialiseer het spel
   setWidth(canvas.width());
   setHeight(canvas.height());
-  setXMax(width);
-  setYMax(height);
-  createStartSnake();
-  createFoods();
-  draw();
-  snakeTimer = setInterval(function() {move(direction);draw();}, SLEEPTIME);
+  setXMax(canvas.width());
+  setYMax(canvas.height());
+  setStartPositions();
+  draw(getElementsForDrawing());
+  snakeTimer = setInterval(function() {move(direction);isFinished();draw(getElementsForDrawing());}, ENV_CONSTANTS.SLEEPTIME);
 }
+
 /**
-@function einde() -> void
-@desc stopt het spel een zet de eindtekst op winst of verlies
-@param {boolean} winst: bepaalt de eindtekst: true is winst, false is verlies
-*/
-function einde(winst: boolean) {
-  if(winst) {
-    setEndText("Victory!");
-  } else {
-    setEndText("Game Over!");
+ * @function isFinished() -> void
+ * @desc Bepaalt aan de hand van de modelstatus (winst) of het spel doorgang vindt.
+ *       Zet de eindtext in de view als er sprake is van een overwinning of verlies
+ */
+function isFinished(){
+  switch (getGameOver()){
+    case null:
+      break;
+    case true:
+      setEndText("Victory!")
+      finish();
+      break;
+    case false:
+      setEndText("Game Over!")
+      finish();
   }
-  finish();
 }
 /**
- * @function stop() -> void
+ * @function finish() -> void
  * @desc stopt het spel
  */
 function finish() {
-  setDirection(DIRECTIONS.UP);
+  setDirection(ENV_CONSTANTS.DIRECTIONS.UP);
   clearInterval(snakeTimer);
 }
 
@@ -59,26 +74,26 @@ function finish() {
  */
 function changeDirection(new_direction: string) {
   switch(new_direction) {
-    case DIRECTIONS.LEFT:
-      if (direction != DIRECTIONS.RIGHT && movable){
+    case ENV_CONSTANTS.DIRECTIONS.LEFT:
+      if (direction != ENV_CONSTANTS.DIRECTIONS.RIGHT && getMovable()){
         setDirection(new_direction);
         setMovable(false);
       }
     break;
-    case DIRECTIONS.UP:
-      if (direction != DIRECTIONS.DOWN && movable){
+    case ENV_CONSTANTS.DIRECTIONS.UP:
+      if (direction != ENV_CONSTANTS.DIRECTIONS.DOWN && getMovable()){
         setDirection(new_direction);
         setMovable(false);
       }
     break;
-    case DIRECTIONS.RIGHT:
-      if (direction != DIRECTIONS.LEFT && movable){
+    case ENV_CONSTANTS.DIRECTIONS.RIGHT:
+      if (direction != ENV_CONSTANTS.DIRECTIONS.LEFT && getMovable()){
         setDirection(new_direction);
         setMovable(false);
       }
     break;
-    case DIRECTIONS.DOWN:
-      if (direction != DIRECTIONS.UP && movable){
+    case ENV_CONSTANTS.DIRECTIONS.DOWN:
+      if (direction != ENV_CONSTANTS.DIRECTIONS.UP && getMovable()){
         setDirection(new_direction);
         setMovable(false);
       }
@@ -87,4 +102,14 @@ function changeDirection(new_direction: string) {
 
 }
 
-export { init, einde, finish, changeDirection};
+/**
+ * @function setDirection(d) -> void
+ * @desc zet de hulpvariable die de richting van de slang bijhoudt op d
+ * @param d {string}
+ */
+
+function setDirection(d: string) {
+  direction = d;
+}
+
+export {init, finish, changeDirection};
